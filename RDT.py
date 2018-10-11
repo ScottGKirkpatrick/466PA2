@@ -101,7 +101,7 @@ class RDT:
             
     
     def rdt_2_1_send(self, msg_S):
-        p = Packet(self.seq_num, msg_S)
+        p = Packet(self.seq_num,1 , msg_S)
         self.seq_num = not self.seq_num
 		while True:
 			self.network.udt_send(p.get_byte_S())
@@ -138,14 +138,20 @@ class RDT:
             #extract length of packet
             length = int(self.byte_buffer[:Packet.length_S_length])
             if len(self.byte_buffer) < length:
+			
                 return ret_S #not enough bytes to read the whole packet
             #create packet from buffer content and add to return string
             p = Packet.from_byte_S(self.byte_buffer[0:length])
+			if(p == "Corrupt"):
+				nACK = Packet(self.seq_num,0 , "")
+				self.network.udt_send(nACK.get_byte_S())
+			
             ret_S = p.msg_S if (ret_S is None) else ret_S + p.msg_S
             #remove the packet bytes from the buffer
             self.byte_buffer = self.byte_buffer[length:]
             #if this was the last packet, will return on the next iteration
-    
+		
+		
     def rdt_3_0_send(self, msg_S):
         pass
         
