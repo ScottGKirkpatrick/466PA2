@@ -129,10 +129,11 @@ class RDT:
 				#print ("corrupt packet: Checksum failed")
 				continue
 			if not recv_p.is_ACK():
-				#print("received nACK")
+				print("received nACK")
 				self.network.udt_send(send_p.get_byte_S())
 				continue
 			else:
+				print("received ACK")
 				break
 		
 	def rdt_2_1_receive(self):
@@ -155,18 +156,19 @@ class RDT:
 			#create packet from buffer content and add to return string
 			p = Packet.from_byte_S(self.byte_buffer[0:length])
 			if(p == "Corrupt"):
-				#print ("corrupt packet: Checksum failed")
+				print ("corrupt packet: Checksum failed")
 				self.byte_buffer = self.byte_buffer[length:]
 				nACK = Packet(self.seq_num,0 , "")
 				self.network.udt_send(nACK.get_byte_S())
 				return ret_S
 			elif (p.seq_num != self.seq_num):
-				#print ("wrong sequence number")
+				print ("wrong sequence number")
 				self.byte_buffer = self.byte_buffer[length:]
 				ACK = Packet(p.seq_num ,1 , "")
 				self.network.udt_send(ACK.get_byte_S())
 				return ret_S
 			else:			
+				print ("ACK sent")
 				self.seq_num = int(not self.seq_num)
 				ACK = Packet(p.seq_num ,1 , "")
 				self.network.udt_send(ACK.get_byte_S())				
