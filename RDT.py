@@ -52,7 +52,7 @@ class Packet:
 		#extract the fields
 		length_S = byte_S[0:Packet.length_S_length]
 		seq_num_S = byte_S[Packet.length_S_length : Packet.seq_num_S_length+Packet.seq_num_S_length]
-		flags = byte_S[Packet.length_S_length+Packet.seq_num_S_length : Packet.length_S_length+Packet.seq_num_S_length+Packet.flag_S_length]
+		flags_S = byte_S[Packet.length_S_length+Packet.seq_num_S_length : Packet.length_S_length+Packet.seq_num_S_length+Packet.flag_S_length]
 		checksum_S = byte_S[Packet.seq_num_S_length+Packet.seq_num_S_length : Packet.seq_num_S_length+Packet.length_S_length+Packet.checksum_length]
 		msg_S = byte_S[Packet.seq_num_S_length+Packet.seq_num_S_length+Packet.checksum_length :]
 		
@@ -102,10 +102,10 @@ class RDT:
 			
 	
 	def rdt_2_1_send(self, msg_S):
-		p = Packet(self.seq_num,1 , msg_S)
+		send_p = Packet(self.seq_num, 1, msg_S)
 		self.seq_num = not self.seq_num
 		while True:
-			self.network.udt_send(p.get_byte_S())
+			self.network.udt_send(send_p.get_byte_S())
 			#wait for ACK/NACK
 			byte_S = self.network.udt_receive()
 			self.byte_buffer += byte_S
@@ -117,12 +117,12 @@ class RDT:
 			if len(self.byte_buffer) < length:
 				continue #not enough bytes to read the whole packet
 			#create packet from buffer content and add to return string
-			p = Packet.from_byte_S(self.byte_buffer[0:length])
-			if p == "Corrupt":
+			recv_p = Packet.from_byte_S(self.byte_buffer[0:length])
+			if recv_p == "Corrupt":
 				continue
 			#remove the packet bytes from the buffer
 			self.byte_buffer = self.byte_buffer[length:]
-			if not p.is_ACK():
+			if not recv_p.is_ACK():
 				continue
 			else:
 				break
