@@ -104,11 +104,13 @@ class RDT:
 	def rdt_2_1_send(self, msg_S):
 		send_p = Packet(self.seq_num, 1, msg_S)
 		self.seq_num = int(not self.seq_num)
+		self.network.udt_send(send_p.get_byte_S())
 		while True:
 			#wait for ACK/NACK
 			byte_S = self.network.udt_receive()
 			self.byte_buffer += byte_S
-			#print (self.byte_buffer)
+			#if(self.byte_buffer != ''):
+			#	print(self.byte_buffer)
 			#check if we have received enough bytes
 			if(len(self.byte_buffer) < Packet.length_S_length):
 				#print ("not enough bytes to read length")
@@ -137,7 +139,8 @@ class RDT:
 		ret_S = None
 		byte_S = self.network.udt_receive()
 		self.byte_buffer += byte_S
-		#print(self.byte_buffer)
+		#if(self.byte_buffer != ''):
+		#	print(self.byte_buffer)
 		#keep extracting packets - if reordered, could get more than one
 		while True:
 			#check if we have received enough bytes
@@ -163,8 +166,10 @@ class RDT:
 				ACK = Packet(p.seq_num ,1 , "")
 				self.network.udt_send(ACK.get_byte_S())
 				return ret_S
-			
-			self.seq_num = int(not self.seq_num)
+			else:			
+				self.seq_num = int(not self.seq_num)
+				ACK = Packet(p.seq_num ,1 , "")
+				self.network.udt_send(ACK.get_byte_S())				
 			ret_S = p.msg_S if (ret_S is None) else ret_S + p.msg_S
 			#remove the packet bytes from the buffer
 			self.byte_buffer = self.byte_buffer[length:]
