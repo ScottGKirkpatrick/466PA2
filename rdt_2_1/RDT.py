@@ -128,7 +128,7 @@ class RDT:
 				send_p.flags = 0
 				self.network.udt_send(send_p.get_byte_S())
 				continue
-			if not recv_p.is_ACK():
+			elif not recv_p.is_ACK():
 				print("received nACK")
 				#remove the packet bytes from the buffer
 				self.byte_buffer = self.byte_buffer[length:]
@@ -136,8 +136,8 @@ class RDT:
 				continue
 			else:
 				print("received ACK")
-				if (recv_p.msg_S == ""):
-					self.byte_buffer = self.byte_buffer[length:]
+				#if (recv_p.msg_S == ""):
+				self.byte_buffer = self.byte_buffer[length:]
 				break
 		
 	def rdt_2_1_receive(self):
