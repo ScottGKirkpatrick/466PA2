@@ -10,8 +10,13 @@ import RDT
 ## Provides an abstraction for the network layer
 class NetworkLayer:
     #configuration parameters
+<<<<<<< HEAD:Network.py
     prob_pkt_loss = 0
     prob_byte_corr = 0.3
+=======
+    prob_pkt_loss = .2
+    prob_byte_corr = .2
+>>>>>>> e2c165e63d505999ff45eb613967c3c955ad7e60:rdt_3_0/Network.py
     prob_pkt_reorder = 0
     
     #class variables

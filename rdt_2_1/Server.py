@@ -30,7 +30,11 @@ if __name__ == '__main__':
     parser.add_argument('port', help='Port.', type=int)
     args = parser.parse_args()
     
+<<<<<<< HEAD:Server.py
     timeout = 20 #close connection if no new data within 5 seconds
+=======
+    timeout = 10 #close connection if no new data within 5 seconds
+>>>>>>> e2c165e63d505999ff45eb613967c3c955ad7e60:rdt_2_1/Server.py
     time_of_last_data = time.time()
     
     rdt = RDT.RDT('server', None, args.port)

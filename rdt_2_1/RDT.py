@@ -103,14 +103,19 @@ class RDT:
 	
 	def rdt_2_1_send(self, msg_S):
 		send_p = Packet(self.seq_num, 1, msg_S)
+		self.network.udt_send(send_p.get_byte_S())
 		self.seq_num = int(not self.seq_num)
 		self.network.udt_send(send_p.get_byte_S())
 		while True:
 			#wait for ACK/NACK
 			byte_S = self.network.udt_receive()
 			self.byte_buffer += byte_S
+<<<<<<< HEAD:RDT.py
 			#if(self.byte_buffer != ''):
 			#	print(self.byte_buffer)
+=======
+			#print (self.byte_buffer)
+>>>>>>> e2c165e63d505999ff45eb613967c3c955ad7e60:rdt_2_1/RDT.py
 			#check if we have received enough bytes
 			if(len(self.byte_buffer) < Packet.length_S_length):
 				#print ("not enough bytes to read length")
@@ -122,18 +127,37 @@ class RDT:
 				continue #not enough bytes to read the whole packet
 			#create packet from buffer content and add to return string
 			recv_p = Packet.from_byte_S(self.byte_buffer[0:length])
+<<<<<<< HEAD:RDT.py
 			#remove the packet bytes from the buffer
 			self.byte_buffer = self.byte_buffer[length:]
 			if recv_p == "Corrupt":				
 				self.network.udt_send(send_p.get_byte_S())
 				#print ("corrupt packet: Checksum failed")
+=======
+			if recv_p == "Corrupt":
+				print ("corrupt ACK/NACK: Checksum failed")
+				#remove the packet bytes from the buffer
+				self.byte_buffer = self.byte_buffer[length:]
+				send_p.flags = 0
+				self.network.udt_send(send_p.get_byte_S())
+>>>>>>> e2c165e63d505999ff45eb613967c3c955ad7e60:rdt_2_1/RDT.py
 				continue
-			if not recv_p.is_ACK():
+			elif not recv_p.is_ACK():
 				print("received nACK")
+<<<<<<< HEAD:RDT.py
+=======
+				#remove the packet bytes from the buffer
+				self.byte_buffer = self.byte_buffer[length:]
+>>>>>>> e2c165e63d505999ff45eb613967c3c955ad7e60:rdt_2_1/RDT.py
 				self.network.udt_send(send_p.get_byte_S())
 				continue
 			else:
 				print("received ACK")
+<<<<<<< HEAD:RDT.py
+=======
+				#if (recv_p.msg_S == ""):
+				self.byte_buffer = self.byte_buffer[length:]
+>>>>>>> e2c165e63d505999ff45eb613967c3c955ad7e60:rdt_2_1/RDT.py
 				break
 		
 	def rdt_2_1_receive(self):
@@ -166,6 +190,7 @@ class RDT:
 				self.byte_buffer = self.byte_buffer[length:]
 				ACK = Packet(p.seq_num ,1 , "")
 				self.network.udt_send(ACK.get_byte_S())
+<<<<<<< HEAD:RDT.py
 				return ret_S
 			else:			
 				print ("ACK sent")
@@ -173,8 +198,19 @@ class RDT:
 				ACK = Packet(p.seq_num ,1 , "")
 				self.network.udt_send(ACK.get_byte_S())				
 			ret_S = p.msg_S if (ret_S is None) else ret_S + p.msg_S
+=======
+				byte_S = self.network.udt_receive()
+				self.byte_buffer += byte_S
+				continue
+			else:
+				self.seq_num = int(not self.seq_num)
+				ret_S = p.msg_S if (ret_S is None) else ret_S + p.msg_S
+				self.byte_buffer = self.byte_buffer[length:]
+				ACK = Packet(p.seq_num ,1 , "")
+				self.network.udt_send(ACK.get_byte_S())
+>>>>>>> e2c165e63d505999ff45eb613967c3c955ad7e60:rdt_2_1/RDT.py
 			#remove the packet bytes from the buffer
-			self.byte_buffer = self.byte_buffer[length:]
+			
 			#if this was the last packet, will return on the next iteration
 		
 		
